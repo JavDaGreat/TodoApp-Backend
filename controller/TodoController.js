@@ -1,12 +1,13 @@
 const User = require("../model/User");
 
 const getAllTodo = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.query;
   const foundUser = await User.findById(id);
+  if (!foundUser) return res.status(404).json({ message: "User not Found" });
 
   const Todo = foundUser.tasks;
   console.log(Todo);
-  if (!Todo || Todo.length === 0) return res.sendStatus(204);
+  if (!Todo || Todo.length === 0) return res.status(204).send();
   res.json(Todo);
 };
 
@@ -19,8 +20,7 @@ const createTodo = async (req, res) => {
   try {
     const result = await foundUser.tasks.push(todo);
     await foundUser.save();
-    console.log(result);
-    res.sendStatus(201);
+    res.status(201).json({ message: "ToDo created Successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -45,7 +45,7 @@ const updateTodo = async (req, res) => {
 
     await foundUser.save();
 
-    res.status(201).json({ message: "success" });
+    res.status(201).json(foundUser.tasks);
   } catch (err) {
     res.sendStatus(500).json(err.message);
   }
@@ -58,10 +58,13 @@ const deleteTodo = async (req, res) => {
   const taskToDelete = foundUser.tasks.findIndex(
     (task) => task._id.toString() === todoId
   );
+  if (taskToDelete === -1) {
+    return res.status(404).json({ message: "Task not found." });
+  }
   console.log(taskToDelete);
   foundUser.tasks.splice(taskToDelete, 1);
 
   await foundUser.save();
-  res.sendStatus(200);
+  res.status(200).json(foundUser.tasks);
 };
 module.exports = { getAllTodo, createTodo, updateTodo, deleteTodo };

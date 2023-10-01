@@ -3,10 +3,11 @@ const app = express();
 require("dotenv").config();
 const connectDB = require("./config/ConnectDB");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const PORT = process.env.PORT || 3500; //Port
 connectDB();
-
+app.use(cors({ origin: "*" })); // allow all orgin to access
 app.use(express.urlencoded({ extended: false })); //recognize incoming req Object as string or arrays
 
 app.use(express.json()); // recognize incoming req as a json Object

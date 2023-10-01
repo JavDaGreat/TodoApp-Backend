@@ -14,7 +14,7 @@ const handleSendEmailForgetPassword = async (req, res) => {
 
   if (!email) return res.status(400).json({ message: " E-mail is required." });
   const foundUser = await User.findOne({ email: email }).exec();
-  if (!foundUser) return res.status(401).json({ message: "user not Exist" });
+  if (!foundUser) return res.status(401).json({ Error: "user not Exist" });
 
   const resetToken = uuidv4();
   foundUser.resetToken = resetToken;
@@ -26,7 +26,7 @@ const handleSendEmailForgetPassword = async (req, res) => {
       {
         From: {
           Email: process.env.SENDER_EMAIL,
-          Name: "Admin",
+          Name: "Todo Support",
         },
         To: [
           {
@@ -45,7 +45,7 @@ const handleSendEmailForgetPassword = async (req, res) => {
             <p style="font-size: 16px;">To reset your password, please copy the following token:</p>
             <span style="background-color: #007bff; color: #fff; padding: 4px 8px; border-radius: 5px; font-size: 24px;">${resetToken}</span>
             <p style="font-size: 16px;">and then click the button below:</p>
-            <a href="https://www.todoapp.com/reset-password" style="display: inline-block; background-color: #007bff; color: #fff; text-decoration: none; padding: 10px 20px; font-size: 18px; border-radius: 5px;">Reset Password</a>
+            <a href="http://localhost:5173/reset" style="display: inline-block; background-color: #007bff; color: #fff; text-decoration: none; padding: 10px 20px; font-size: 18px; border-radius: 5px;">Reset Password</a>
 
             <p style="font-size: 16px;">If you did not request this password reset, please ignore this email.</p>
             <p style="font-size: 16px;">Thank you for using Todo App!</p>
@@ -63,6 +63,6 @@ const handleSendEmailForgetPassword = async (req, res) => {
     .catch((err) => {
       console.log(err.statusCode);
     });
-  res.sendStatus(200);
+  res.status(200).json({ message: "success" });
 };
 module.exports = { handleSendEmailForgetPassword };
